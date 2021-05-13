@@ -7,16 +7,24 @@ import { Uploadmodel } from './uploadmodel';
 })
 export class UploadserviceService {
 
+  public model:Uploadmodel;
+  public storedata:Uploadmodel[];
+
     readonly insertUrl = "http://localhost:3000/fileupload";
     readonly fetchUrl = "http://localhost:3000/fetchData";
+    readonly updateUrl = "http://localhost:3000/fileupload/";
     readonly deleteUrl = "http://localhost:3000/delete";
 
 
   constructor(public http:HttpClient) { }
 
-  insertdata(obj:Uploadmodel){
-    console.log(obj.file );
+  insertdata(obj:any){
     return this.http.post(this.insertUrl,obj);
+  
+
+  }
+  update(obj:any,id:any){
+    return this.http.post(this.updateUrl+id,obj);
   
 
   }

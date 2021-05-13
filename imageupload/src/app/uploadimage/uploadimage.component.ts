@@ -28,6 +28,7 @@ export class UploadimageComponent implements OnInit {
 
   ngOnInit(): void {
     this.fetchdataList();
+    this.reset();
   }
   
     // For get image
@@ -47,14 +48,14 @@ export class UploadimageComponent implements OnInit {
     form.value.file=this.image;
 
       const formData = new FormData();
-      formData.append('Name',this.Name)
-      formData.append('Email',this.Email)
-      formData.append('Mob',this.Mob)
+      formData.append('Name',this.service.model.Name)
+      formData.append('Email',this.service.model.Email)
+      formData.append('Mob',this.service.model.Mob)
       formData.append('file',this.image);
 
-      this.http.post('http://localhost:3000/fileupload',formData).subscribe((res)=>{
+      this.service.insertdata(formData).subscribe((res)=>{
         console.log(res); 
-        this.resert();
+        this.reset(form);
         this.fetchdataList();
 
       })
@@ -62,12 +63,19 @@ export class UploadimageComponent implements OnInit {
   }
 
   // for reset Form
-  resert(){
-    this.Name="";
-    this.Email="";
-    this.Mob="";
-    this.file="";
-    this.Id="";
+  reset(form?:NgForm){
+    if(form)
+    form.reset();
+
+    this.service.model = {
+
+      _id: "",
+      Name:"",
+      Email:"",
+      Mob:"",
+      file:""
+  
+  }
    
     
   }
@@ -94,10 +102,7 @@ export class UploadimageComponent implements OnInit {
 
   // for assign value to  form
   Edit(item){
-    this.Id=item._id;
-    this.Name=item.Name;
-    this.Email=item.Email;
-    this.Mob=item.Mob;
+   this.service.model=item;
     this.displaySubmit="none";
     this.displayUpdate="block";
     
@@ -105,17 +110,17 @@ export class UploadimageComponent implements OnInit {
 
 
   // Update existing record
-  update(){
+  update(form?:NgForm){
     
     const formData = new FormData();
-      formData.append('Name',this.Name)
-      formData.append('Email',this.Email)
-      formData.append('Mob',this.Mob)
-      formData.append('file',this.image);
+    formData.append('Name',this.service.model.Name)
+    formData.append('Email',this.service.model.Email)
+    formData.append('Mob',this.service.model.Mob)
+    formData.append('file',this.image);
 
-      this.http.post('http://localhost:3000/fileupload/'+this.Id,formData).subscribe((res)=>{
+      this.service.update(formData,this.service.model._id).subscribe((res)=>{
         console.log(res); 
-        this.resert();
+        this.reset(form);
         this.fetchdataList();
         this.displaySubmit="block";
         this.displayUpdate="none";

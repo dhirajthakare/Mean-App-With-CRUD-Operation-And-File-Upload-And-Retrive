@@ -5,14 +5,32 @@ const JsonData = bodyParse.json();
 const mongoose = require('mongoose');
 const cors = require('cors');
 const uploadmodel = require('./uploadmodel');
+const fs = require('fs');
 app.use(cors());
+app.use('/upload', express.static('upload'));
+const dbconffi = require('./dbConff');
+
+  
+// fs.unlink('upload/Imageadvisorapp.png',function(err){
+//     if(err){
+//         console.log(err)
+//     }else{
+//         console.log("done");
+//     }
+// })
+
+function randomNum(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
 const multer = require('multer');
+const { model } = require('mongoose');
 
 // Multer for storedata And rename file
 const storage = multer.diskStorage({
-    destination:'../imageupload/src/assets/upload',filename:(req,file,callBack)=>{
-        console.log(file);
-        callBack(null,`Image${file.originalname}`)
+    destination:'upload',filename:(req,file,callBack)=>{
+        // console.log(file);
+        callBack(null,`${randomNum(100000,599990)}Image${file.originalname}`)
     }
     })
 
@@ -20,14 +38,11 @@ const storage = multer.diskStorage({
 
     // let upload = multer({dest:'upload/'}) 
 
-const dbconffi = require('./dbConff');
-
-
 
  //Single File Upload And insert data Api
  app.post('/fileupload',JsonData ,upload.single('file') , (req,res,next)=>{
     const file = req.file;
-    console.log(file.filename);
+    // console.log(file.filename);
     if(!file){
         const error = new error('no file')
         error.httpStatusCode=400
@@ -42,7 +57,7 @@ const dbconffi = require('./dbConff');
         imgUrl:file.filename
     })
     send.save().then((responce)=>{
-        console.log(file.filename);
+        // console.log(file.filename);
     }).catch((err)=>{
         console.log(err);
     })
@@ -55,7 +70,7 @@ const dbconffi = require('./dbConff');
  // For Update existing record Api
  app.post('/fileupload/:id',JsonData ,upload.single('file') , function(req,res){
     const file = req.file;
-    console.log(file.filename);
+    // console.log(file.filename);
     if(!file){
         const error = new error('no file')
         error.httpStatusCode=400
@@ -68,7 +83,7 @@ const dbconffi = require('./dbConff');
         Mob:req.body.Mob,
         imgUrl:file.filename
     }}).then((responce)=>{
-        console.log(file.filename);
+        // console.log(file.filename);
         res.send(file)
     }).catch((err)=>{
         console.log(err);
@@ -76,7 +91,6 @@ const dbconffi = require('./dbConff');
     
    
  })
-
 
 
 
@@ -89,17 +103,35 @@ const dbconffi = require('./dbConff');
      })
  })
 
+ 
+
  app.delete('/delete/:id',function(req,res){
-    uploadmodel.deleteOne({_id:req.params.id}).then((responce)=>{
-        res.send(responce);
-    })
-    .catch((err)=>{
+
+    uploadmodel.find({_id:req.params.id}).then((responce)=>{
+
+        fs.unlink('upload/'+responce[0].imgUrl,function(err){
+                if(err){
+                    console.log(err)
+                }else{
+                    uploadmodel.deleteOne({_id:req.params.id}).then((responce)=>{
+                        res.send(responce);
+                    })
+                    .catch((err)=>{-
+                        console.log(err);
+                    })
+                }
+            })
+
+    }).catch((err)=>{
         console.log(err);
     })
 })
 
 app.get('/',function(req,res){
-    res.end("your welcome dear");
+    res.send({ some: 'json' });  
+
+    // res.end("your welcome dear");
 })
 
 app.listen(3000);
+
