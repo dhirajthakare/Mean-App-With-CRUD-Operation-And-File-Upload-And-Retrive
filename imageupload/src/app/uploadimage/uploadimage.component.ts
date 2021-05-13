@@ -10,14 +10,8 @@ import { UploadserviceService } from '../resource/uploadservice.service';
   styleUrls: ['./uploadimage.component.css']
 })
 export class UploadimageComponent implements OnInit {
-  image;
-  multipleimage = [];
-  Id;
-  Name;
-  Email;
-  Mob;
-  file;
-  data=[];
+  image; 
+  // data=[];
   displaySubmit="block";
   displayUpdate="none";
 
@@ -84,7 +78,7 @@ export class UploadimageComponent implements OnInit {
   fetchdataList(){
 
   this.service.fetch().subscribe((res)=>{
- this.data = res as Uploadmodel[];
+ this.service.storedata = res as Uploadmodel[];
   })
   }
 
@@ -119,7 +113,7 @@ export class UploadimageComponent implements OnInit {
     formData.append('file',this.image);
 
       this.service.update(formData,this.service.model._id).subscribe((res)=>{
-        console.log(res); 
+        // console.log(res); 
         this.reset(form);
         this.fetchdataList();
         this.displaySubmit="block";

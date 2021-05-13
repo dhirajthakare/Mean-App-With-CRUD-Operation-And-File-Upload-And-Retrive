@@ -6,6 +6,8 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const uploadmodel = require('./uploadmodel');
 const fs = require('fs');
+const cookiesp = require('cookie-parser');
+app.use(cookiesp());
 app.use(cors());
 app.use('/upload', express.static('upload'));
 const dbconffi = require('./dbConff');
@@ -131,6 +133,22 @@ app.get('/',function(req,res){
     res.send({ some: 'json' });  
 
     // res.end("your welcome dear");
+})
+
+app.get('/setcookiesk',function(req,res){
+    console.log('heloo');
+    res.cookie('zozotinew','travel Comapany new');
+    // res.cookie('volyo','software development');
+    // res.cookie('lucid','software development concept ');
+    // res.status(200).send("cookies Send Successfully ");
+
+
+})
+app.get('/getcookies',function(req,res){
+
+    res.status(200).send(req.cookies);
+
+
 })
 
 app.listen(3000);
